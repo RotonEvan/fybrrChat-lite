@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', async() => {
     window.node = node
     const status = node.isOnline() ? 'online' : 'offline'
     console.log(`Node status: ${status}`);
-    // let result = await node.add("txt hello 123");
-    // console.log(result);
 })
 
 async function sendTxt() {
