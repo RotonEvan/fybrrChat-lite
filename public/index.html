@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <title>Express</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+    <script src="https://bundle.run/buffer@5.2.1"></script>
+    <!-- <script src="https://www.unpkg.com/buffer@6.0.3/index.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script> -->
+    <!-- <script src="/js/ipfs.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/browse/ipfs@0.55.4/dist/index.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js" integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB" crossorigin="anonymous"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
+</head>
+
+<body>
+    <input type="text" id="txt">
+    <button id="send" onclick="sendTxt()">Send</button>
+    <p id="sent"></p>
+    <br>
+    <input type="text" id="recvhash">
+    <button id="rec" onclick="recTxt()">Receive</button>
+    <br>
+    <p id="msg"></p>
+
+    <script src="/js/chat.js"></script>
+</body>
+
+</html>

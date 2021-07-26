@@ -1,0 +1,40 @@
+Certificate Request:
+    Data:
+        Version: 1 (0x0)
+        Subject: C = AU, ST = Some-State, O = Internet Widgits Pty Ltd
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (1024 bit)
+                Modulus:
+                    00:ed:c0:2f:15:01:d4:66:c4:ea:80:ae:3a:2e:fb:
+                    3e:a0:62:d0:e7:8b:70:7c:6e:09:ed:e1:85:dd:ea:
+                    4a:82:ea:5b:0b:5f:cd:8d:2f:d8:73:f1:7c:96:17:
+                    5e:79:a5:50:f5:83:b7:b1:cc:79:bd:aa:bb:00:d4:
+                    87:93:d4:ba:a4:b5:5a:39:00:76:23:2b:78:61:16:
+                    22:64:b4:2b:8b:b2:3e:58:9d:94:4a:17:1e:b3:3c:
+                    91:00:10:e3:cb:64:eb:c3:d2:2b:9e:63:14:48:a2:
+                    95:30:3e:dc:43:9b:8f:52:b7:e1:a2:b3:f1:83:b3:
+                    ce:87:c1:fb:56:45:1e:b1:b5
+                Exponent: 65537 (0x10001)
+        Attributes:
+            a0:00
+    Signature Algorithm: sha256WithRSAEncryption
+         6b:54:27:aa:86:c2:09:c0:a5:c7:f2:3f:5f:6c:b4:68:36:22:
+         5e:a4:9e:df:ba:6c:19:eb:7a:ed:3b:dd:0d:81:50:30:39:0a:
+         4e:db:f6:d7:6b:fd:81:77:7a:9e:2e:a1:ef:2f:64:56:b8:d3:
+         fa:fe:7e:c8:1f:66:ad:98:d9:2c:93:ac:30:87:29:23:8e:e3:
+         8b:9e:4e:fb:fc:90:35:0e:4b:ad:42:78:e3:ff:55:08:fc:ca:
+         7a:61:7f:6a:34:cb:89:5e:f8:62:8f:48:b6:2a:e5:cc:4d:57:
+         d7:b6:06:57:68:16:b1:4c:76:d0:6d:cf:54:38:35:56:4e:2c:
+         c4:4d
+-----BEGIN CERTIFICATE REQUEST-----
+MIIBhDCB7gIBADBFMQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEh
+MB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIGfMA0GCSqGSIb3DQEB
+AQUAA4GNADCBiQKBgQDtwC8VAdRmxOqArjou+z6gYtDni3B8bgnt4YXd6kqC6lsL
+X82NL9hz8XyWF155pVD1g7exzHm9qrsA1IeT1LqktVo5AHYjK3hhFiJktCuLsj5Y
+nZRKFx6zPJEAEOPLZOvD0iueYxRIopUwPtxDm49St+Gis/GDs86HwftWRR6xtQID
+AQABoAAwDQYJKoZIhvcNAQELBQADgYEAa1QnqobCCcClx/I/X2y0aDYiXqSe37ps
+Get67TvdDYFQMDkKTtv212v9gXd6ni6h7y9kVrjT+v5+yB9mrZjZLJOsMIcpI47j
+i55O+/yQNQ5LrUJ44/9VCPzKemF/ajTLiV74Yo9ItirlzE1X17YGV2gWsUx20G3P
+VDg1Vk4sxE0=
+-----END CERTIFICATE REQUEST-----

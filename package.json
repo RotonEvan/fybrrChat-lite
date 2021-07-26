@@ -1,17 +1,17 @@
 {
-    "name": "example-browser-video-streaming",
-    "description": "IPFS browser video streaming example",
-    "main": "index.html",
-    "version": "2.0.1",
+    "name": "fybrrchat-lite",
+    "version": "0.0.0",
     "private": true,
     "scripts": {
-        "serve": "http-server . -a 127.0.0.1 -p 8888",
-        "start": "npm run serve",
-        "test": "test-ipfs-example"
+        "start": "node ./bin/www"
     },
-    "keywords": [],
-    "license": "MIT",
     "dependencies": {
-        "ipfs": "^0.55.4"
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
+        "ipfs": "^0.55.4",
+        "morgan": "~1.9.1",
+        "uuid": "^3.4.0",
+        "ws": "^7.5.3"
     }
 }

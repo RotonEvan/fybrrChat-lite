@@ -1,0 +1,167 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+const fs = require('fs');
+var app = require('../app');
+var debug = require('debug')('fybrrchat-lite:server');
+var http = require('http');
+var https = require('https');
+var WebSocket = require('ws')
+    // const { sign } = require('crypto');
+
+// Yes, TLS is required
+const serverConfig = {
+    key: fs.readFileSync('ca.key'),
+    cert: fs.readFileSync('ca.crt'),
+    passphrase: 'roton'
+};
+
+// process.env.JWT_PRIVATE_KEY.replace(/\\n/gm, '\n');
+
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(serverConfig, app);
+
+//initialize the WebSocket server instance
+const wss = new WebSocket.Server({ server });
+
+rooms = {};
+
+client = {};
+
+wss.on('connection', function(ws) {
+
+    // var clientID = create_UUID();
+    var room;
+
+
+    ws.on('message', function(message) {
+        console.log('received: %s', message);
+        var signal = JSON.parse(message);
+        room = signal.room;
+        clientID = signal.self;
+        client[signal.self] = ws;
+
+        if (signal.join) {
+            if (!rooms[room]) {
+                console.log('creating room ' + room);
+                rooms[room] = { 'room': room, 'clients': {} }
+                rooms[room].clients[clientID] = client[clientID];
+                console.log(client[clientID].readyState);
+                wss.sendToClient(JSON.stringify({ 'joined': true }), clientID);
+            } else {
+                rooms[room].clients[clientID] = client[clientID];
+                wss.sendToClient(JSON.stringify({ 'joined': true }), clientID);
+            }
+        }
+
+        if (signal.dest == 'all') {
+            for (var id in rooms[room].clients) {
+                console.log(id);
+                if (signal.uuid == id) continue;
+                wss.sendToClient(message, id);
+            }
+        }
+        // if (signal.call || signal.sdp || signal.ice) {
+        //   wss.sendToClient(message, signal.dest);
+        // }
+        // if (signal.test) {
+        //   console.log(signal.msg);
+        //   ws.send(JSON.stringify({"msg": signal.msg}))
+        // }
+
+        // wss.broadcast(message);
+    });
+
+    ws.on('error', () => {
+        ws.terminate();
+    });
+});
+
+wss.sendToClient = function(data, id) {
+    if (client[id].readyState === WebSocket.OPEN) {
+        console.log("sending data to " + id);
+        client[id].send(data);
+    }
+}
+
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
+
+    if (port >= 0) {
+        // port number
+        return port;
+    }
+
+    return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    var bind = typeof port === 'string' ?
+        'Pipe ' + port :
+        'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string' ?
+        'pipe ' + addr :
+        'port ' + addr.port;
+    debug('Listening on ' + bind);
+}
