@@ -1,20 +1,36 @@
+<!DOCTYPE html>
 <html>
 
-<body>
-    <!-- <video id="video" controls></video> -->
-    <input type="text" id="txt">
-    <button id="send" onclick="sendTxt()">Send</button>
-    <p id="sent"></p>
-    <br>
-    <input type="text" id="recvhash">
-    <button id="rec" onclick="recTxt()">Receive</button>
-    <br>
-    <p id="msg"></p>
-
+<head>
+    <script type='text/javascript' src='https://cdn.scaledrone.com/scaledrone.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js"></script>
     <script src="./node_modules/ipfs/dist/index.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/hlsjs-ipfs-loader@0.3.0/dist/index.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@0.14.17"></script> -->
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>fybrrChat</title>
+</head>
+
+<body>
+    <div class="content">
+        <div class="messages">
+
+        </div>
+        <form class="footer" onsubmit="return false;">
+            <input type="text" placeholder="Your message..">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <template data-template="message">
+        <div class="message">
+            <div class="message__name"></div>
+            <div class="message__bubble"></div>
+        </div>
+    </template>
+
     <script src="chat.js"></script>
+
 </body>
 
 </html>
