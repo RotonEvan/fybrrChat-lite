@@ -1,0 +1,81 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    height: 100vh;
+}
+
+.content {
+    box-shadow: rgba(156, 172, 172, 0.2) 0px 2px 2px, rgba(156, 172, 172, 0.2) 0px 4px 4px, rgba(156, 172, 172, 0.2) 0px 8px 8px, rgba(156, 172, 172, 0.2) 0px 16px 16px, rgba(156, 172, 172, 0.2) 0px 32px 32px, rgba(156, 172, 172, 0.2) 0px 64px 64px;
+    border-radius: 3px;
+    height: 100vh;
+    max-height: 600px;
+    width: 100vw;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages {
+    flex-grow: 1;
+    padding: 20px 30px;
+    overflow: auto;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+}
+
+.message--mine {
+    align-items: flex-end;
+}
+
+.message--theirs {
+    align-items: flex-start;
+}
+
+.message__name {
+    padding: 10px 0;
+}
+
+.message__bubble {
+    padding: 20px;
+    border-radius: 3px;
+}
+
+.message--theirs .message__bubble {
+    background: #6363bf;
+    color: white;
+}
+
+.message--mine .message__bubble {
+    background: rgba(156, 172, 172, 0.2);
+}
+
+.footer {
+    line-height: 76px;
+    border-top: 1px solid rgba(156, 172, 172, 0.2);
+    display: flex;
+    flex-shrink: 0;
+}
+
+input {
+    height: 76px;
+    border: none;
+    flex-grow: 1;
+    padding: 0 30px;
+    font-size: 16px;
+    background: transparent;
+}
+
+button {
+    border: none;
+    background: transparent;
+    padding: 0 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
