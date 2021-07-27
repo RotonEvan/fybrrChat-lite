@@ -164,7 +164,40 @@ form.addEventListener('submit', async() => {
 
     let senthash = await addTxt(value);
 
+    pinByHash(senthash);
+
     sendSignalingMessage({ 'newHash': senthash });
 
 
 });
+
+
+function pinByHash(hashToPin) {
+
+    const url = `https://api.pinata.cloud/pinning/pinByHash`;
+    const body = {
+        hashToPin: hashToPin,
+        // hostNodes: [
+        //     '/ip4/hostNode1ExternalIP/tcp/4001/ipfs/hostNode1PeerId',
+        //     '/ip4/hostNode2ExternalIP/tcp/4001/ipfs/hostNode2PeerId'
+        // ],
+        pinataMetadata: {
+            name: 'fybrrChat-lite',
+            keyvalues: {
+                customKey: 'fybrrChat-lite'
+            }
+        }
+    };
+
+    axios.post(url, body, {
+        headers: {
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIwNGY4OWM5Yi1hMzRiLTRlN2MtYWNjOS0wNTIxYmUwZDcyOGYiLCJlbWFpbCI6ImRlYmFqeW90aTIwMDFAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZX0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6ImZiOWZiZGNiOWVjYjJkYjVmOTdhIiwic2NvcGVkS2V5U2VjcmV0IjoiYjI3YjRlMTM4YzliMzNhOTE0NWU3ZDY5ZmFiODM0OGVjMTRmZmYwNjU1MmYzNzlhZTIxZWI5ZmExNzgwZmI2NyIsImlhdCI6MTYyNzQyMDQwOH0.Y3Z5A3Bg3fHrMwxWoy_u4s6hfE_Zpa_PN0F0e-nv33s"
+        }
+    }).then(function(response) {
+        //handle response here
+        console.log(response);
+    }).catch(function(error) {
+        //handle error here
+        console.log(error);
+    });
+}
