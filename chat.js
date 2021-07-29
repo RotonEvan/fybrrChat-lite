@@ -43,9 +43,65 @@ const chatHash = location.hash.substring(1);
 
 const drone = new ScaleDrone('mMKnE5Dm1lX7ktjf');
 // Scaledrone room name needs to be prefixed with 'observable-'
-const roomName = 'observable-' + chatHash;
+const roomName = 'observable-' + chatHash + 'dm';
 // Scaledrone room used for signaling
 let room;
+
+const util = nacl.util;
+
+const keypair = nacl.box.keyPair();
+const publicKey = keypair.publicKey;
+const secretKey = keypair.secretKey;
+
+let peerKey;
+let shared;
+
+const newNonce = () => nacl.randomBytes(nacl.box.nonceLength);
+
+const JsonToArray = function(json) {
+    // var str = JSON.stringify(json, null, 0);
+    // console.log(str);
+    var ret = new Uint8Array(32);
+    for (var i = 0; i < 32; i++) {
+        ret[i] = json[i];
+    }
+    return ret
+};
+
+const encrypt = (secretOrSharedKey, json, key) => {
+    const nonce = newNonce();
+    const messageUint8 = util.decodeUTF8(JSON.stringify(json));
+    const encrypted = key ?
+        nacl.box(messageUint8, nonce, key, secretOrSharedKey) :
+        nacl.box.after(messageUint8, nonce, secretOrSharedKey);
+
+    const fullMessage = new Uint8Array(nonce.length + encrypted.length);
+    fullMessage.set(nonce);
+    fullMessage.set(encrypted, nonce.length);
+
+    const base64FullMessage = util.encodeBase64(fullMessage);
+    return base64FullMessage;
+};
+
+const decrypt = (secretOrSharedKey, messageWithNonce, key) => {
+    const messageWithNonceAsUint8Array = util.decodeBase64(messageWithNonce);
+    const nonce = messageWithNonceAsUint8Array.slice(0, nacl.box.nonceLength);
+    const message = messageWithNonceAsUint8Array.slice(
+        nacl.box.nonceLength,
+        messageWithNonce.length
+    );
+
+    const decrypted = key ?
+        nacl.box.open(message, nonce, key, secretOrSharedKey) :
+        nacl.box.open.after(message, nonce, secretOrSharedKey);
+
+    if (!decrypted) {
+        throw new Error('Could not decrypt message');
+    }
+
+    const base64DecryptedMessage = util.encodeUTF8(decrypted);
+    return JSON.parse(base64DecryptedMessage);
+};
 
 // Wait for Scaledrone signalling server to connect
 drone.on('open', error => {
@@ -59,7 +115,15 @@ drone.on('open', error => {
         }
         console.log('Connected to signaling server');
     });
-    startListentingToSignals();
+    room.on('members', members => {
+        if (members.length >= 3) {
+            return alert('The room is full');
+        } else {
+            startListentingToSignals();
+            sendSignalingMessage({ 'hello': 'hello' });
+        }
+    });
+
 });
 
 // Send signaling data via Scaledrone
@@ -79,6 +143,16 @@ function startListentingToSignals() {
         }
         if (message.newHash) {
             catMsg(message.newHash);
+        } else if (message.hello) {
+            sendSignalingMessage({ pk: publicKey });
+        } else if (message.pk) {
+            if (!(peerKey)) {
+                let pkey = message.pk;
+                peerKey = JsonToArray(pkey);
+                // console.log(peerKey);
+                shared = nacl.box.before(peerKey, secretKey);
+                sendSignalingMessage({ pk: publicKey });
+            }
         }
     });
 }
@@ -92,15 +166,16 @@ async function sendTxt() {
 
 async function addTxt(txt) {
     // TODO: Message Structure
-    const data = {
+    const obj = {
         selfname,
         content: txt,
         emoji,
         m_id: uuidv4()
     };
-    insertMessageToDOM(data, true);
-    let result = await node.add(JSON.stringify(data));
-    console.log(result);
+    insertMessageToDOM(obj, true);
+    let data = encrypt(shared, obj);
+    let result = await node.add(data);
+    // console.log(result);
     return result.path;
 }
 
@@ -119,13 +194,12 @@ async function catMsg(recvhash) {
     }
 
     // console.log(msg);
-
-    let jsonmsg = JSON.parse(msg);
+    let jsonmsg = await decrypt(shared, msg);
 
     // console.log(jsonmsg);
 
     if (document.getElementById("msg")) {
-        document.getElementById("msg").innerHTML = msg;
+        document.getElementById("msg").innerHTML = jsonmsg;
     } else {
         insertMessageToDOM(jsonmsg);
     }
@@ -195,7 +269,7 @@ function pinByHash(hashToPin) {
         }
     }).then(function(response) {
         //handle response here
-        console.log(response);
+        // console.log(response);
     }).catch(function(error) {
         //handle error here
         console.log(error);
