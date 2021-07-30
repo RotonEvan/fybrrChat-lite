@@ -206,13 +206,24 @@ async function catMsg(recvhash) {
 
 // Updating UI
 
+function linkify(text) {
+    var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, function(url) {
+        return '<a href="' + url + '">' + url + '</a>';
+    });
+}
+
 function insertMessageToDOM(options, isFromMe = false) {
     const template = document.querySelector('template[data-template="message"]');
     const nameEl = template.content.querySelector('.message__name');
     if (options.emoji || options.selfname) {
         nameEl.innerText = options.selfname + ' ' + options.emoji;
     }
-    template.content.querySelector('.message__bubble').innerText = options.content;
+    let msgcontent;
+    let msgcontent_sanitized;
+    msgcontent = options.content;
+    msgcontent_sanitized = linkify(msgcontent);
+    template.content.querySelector('.message__bubble').innerHTML = msgcontent_sanitized;
     const clone = document.importNode(template.content, true);
     const messageEl = clone.querySelector('.message');
     if (isFromMe) {
