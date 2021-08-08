@@ -9,8 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.1/nacl.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
     <!-- <script src="./node_modules/ipfs/dist/index.min.js"></script> -->
-    <script src="index.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <script src="js/index.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>fybrrChat</title>
@@ -34,8 +34,15 @@
             <div class="message__bubble"></div>
         </div>
     </template>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="/__/firebase/8.8.1/firebase-app.js"></script>
 
-    <script src="chat.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <!-- Initialize Firebase -->
+    <script src="/__/firebase/init.js"></script>
+    <script src="/js/group.js"></script>
 
 </body>
 
