@@ -1,3 +1,5 @@
+// document.getElementById('search').off('click');
+
 let selfname;
 let uid;
 let usr;
@@ -30,23 +32,36 @@ function XOR_hex(a, b) {
     return res;
 }
 
+function clicked() {
+    let str = document.getElementById('search').innerText;
+    console.log(str);
+    if (str == 'SEARCH') {
+        searchPeer();
+    } else {
+        chatWithPeer();
+    }
+}
+
 async function searchPeer() {
     peerid = null;
     let peer = document.getElementById('peer').value;
+    let peername;
     console.log(peer);
     await users.where('email', '==', peer.toString()).get().then((snap) => {
         snap.forEach(doc => {
             console.log(doc.id, ' => ', doc.data());
             peerid = doc.id;
             peerKey = doc.data().pubkey;
+            peername = doc.data().name;
         });
     }).catch(error => {
         console.error(error);
     });
     if (peerid) {
-        document.getElementById('chat').disabled = false;
+        document.getElementById('search').innerHTML = 'fybrrChat with ' + peername + '!';
     } else {
-        document.getElementById('chat').disabled = true;
+        document.getElementById('search').innerHTML = 'Search';
+        alert('Probably your friend hasn\'t heard of fybrrChat yet 😕');
     }
 }
 
@@ -175,7 +190,7 @@ function initApp() {
             });
             // var providerData = user.providerData;
             // document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
-            document.getElementById('quickstart-sign-in').textContent = 'Sign out';
+            document.getElementById('quickstart-sign-in').textContent = 'Signed in as ' + selfname;
             document.getElementById('search').disabled = false;
             // document.getElementById('quickstart-account-details').textContent = JSON.stringify(user, null, '  ');
         } else {

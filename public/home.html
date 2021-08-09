@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>fybrrChat-lite</title>
+    <title>Login V18</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--===============================================================================================-->
@@ -27,9 +27,6 @@
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!--===============================================================================================-->
-    <script src="https://cdn.jsdelivr.net/npm/tweetnacl-util@0.15.0/nacl-util.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.1/nacl.min.js"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 </head>
 
 <body style="background-color: #666666;">
@@ -37,43 +34,64 @@
     <div class="limiter">
         <div class="container-login100">
             <div class="wrap-login100">
-                <div class="login100-form validate-form">
+                <form class="login100-form validate-form">
                     <span class="login100-form-title p-b-43">
-						Sign in and Search your friend
+						Login to continue
 					</span>
 
-                    <div class="container-login100-form-btn">
-                        <button type="button" class="login-with-google-btn" id="quickstart-sign-in">
-                            Sign in with Google
-                        </button>
-                    </div>
-
-
-                    <div class="text-center p-t-46 p-b-20">
-                        <span class="txt2">
-							-- and search your friend --
-						</span>
-                    </div>
 
                     <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                        <input class="input100" type="text" id="peer">
+                        <input class="input100" type="text" name="email" id="email">
                         <span class="focus-input100"></span>
                         <span class="label-input100">Email</span>
                     </div>
 
 
+                    <div class="wrap-input100 validate-input" data-validate="Password is required">
+                        <input class="input100" type="password" name="pass" id="password">
+                        <span class="focus-input100"></span>
+                        <span class="label-input100">Password</span>
+                    </div>
 
+                    <div class="flex-sb-m w-full p-t-3 p-b-32">
+                        <div class="contact100-form-checkbox">
+                            <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+                            <label class="label-checkbox100" for="ckb1">
+								Remember me
+							</label>
+                        </div>
 
-                    <div class="container-login100-form-btn">
-                        <button class="login100-form-btn" id="search" onclick="clicked()">
-							Search
-						</button>
+                        <div>
+                            <a href="#" class="txt1">
+								Forgot Password?
+							</a>
+                        </div>
                     </div>
 
 
+                    <div class="container-login100-form-btn">
+                        <button class="login100-form-btn">
+							Login
+						</button>
+                    </div>
 
+                    <div class="text-center p-t-46 p-b-20">
+                        <span class="txt2">
+							or sign up using
+						</span>
+                    </div>
 
-                </div>
+                    <div class="login100-form-social flex-c-m">
+                        <a href="#" class="login100-form-social-item flex-c-m bg4 m-r-5">
+
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </a>
+
+                        <a href="#" class="login100-form-social-item flex-c-m bg5 m-r-5">
+                            <i class="fa fa-google" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </form>
 
                 <div class="login100-more" style="background-image: url('images/bg_3.png');">
                 </div>
@@ -81,16 +99,7 @@
         </div>
     </div>
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="/__/firebase/8.8.1/firebase-app.js"></script>
-    <script src="/__/firebase/8.8.1/firebase-auth.js"></script>
-    <script src="/__/firebase/8.8.1/firebase-firestore.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-
-    <!-- Initialize Firebase -->
-    <script src="/__/firebase/init.js"></script>
 
 
 
@@ -110,7 +119,6 @@
     <script src="vendor/countdowntime/countdowntime.js"></script>
     <!--===============================================================================================-->
     <script src="js/main.js"></script>
-    <script src="js/intro.js"></script>
 
 </body>
 
