@@ -16,6 +16,7 @@ let selfEmail;
 let peerEmail;
 
 let peerid;
+let peername;
 
 const util = nacl.util;
 
@@ -45,7 +46,6 @@ function clicked() {
 async function searchPeer() {
     peerid = null;
     let peer = document.getElementById('peer').value;
-    let peername;
     console.log(peer);
     await users.where('email', '==', peer.toString()).get().then((snap) => {
         snap.forEach(doc => {
@@ -69,6 +69,8 @@ function chatWithPeer() {
     let room = XOR_hex(uid, peerid);
     sessionStorage.setItem(room, peerid);
     localStorage.setItem(room, peerid);
+    sessionStorage.setItem(room + '-name', peername);
+    localStorage.setItem(room + '-name', peername);
     // sessionStorage.setItem(peerid, peerKey);
     // localStorage.setItem(peerid, peerKey);
     window.location.href = './chat.html#' + room;
@@ -150,6 +152,7 @@ function initApp() {
             selfEmail = user.email;
             // var emailVerified = user.emailVerified;
             // var photoURL = user.photoURL;
+            // console.log(photoURL);
             // var isAnonymous = user.isAnonymous;
             uid = user.uid;
 

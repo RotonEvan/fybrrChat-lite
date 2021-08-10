@@ -28,9 +28,13 @@ let msgHash = db.collection('msgHash');
 let selfEmail;
 let peerEmail;
 let peerid;
+let peername;
 
 let aliveTime = 0;
 let isPeerOnline = false;
+
+let p2p_flag = false;
+let peer_flag = false;
 // let selfname = prompt('Enter your name', '');
 
 // easter-egg
@@ -39,6 +43,19 @@ let isPeerOnline = false;
 //     emoji = '🔥';
 // }
 
+// Generate random chat hash if needed
+if (!location.hash) {
+    location.hash = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+}
+const chatHash = location.hash.substring(1);
+
+if (sessionStorage.getItem(chatHash + '-name')) {
+    peername = sessionStorage.getItem(chatHash + '-name');
+} else if (localStorage.getItem(chatHash + '-name')) {
+    peername = localStorage.getItem(chatHash + '-name');
+}
+
+document.getElementById('peer_name').innerText = peername;
 
 document.addEventListener('DOMContentLoaded', async() => {
     const repoPath = 'ipfs-' + Math.random()
@@ -59,12 +76,6 @@ document.addEventListener('DOMContentLoaded', async() => {
     console.log(`Signed? - ${signed}`);
     console.log(`FireAuth? - ${firebase.auth().currentUser}`);
 })
-
-// Generate random chat hash if needed
-if (!location.hash) {
-    location.hash = Math.floor(Math.random() * 0xFFFFFF).toString(16);
-}
-const chatHash = location.hash.substring(1);
 
 /**
  * ScaleDrone initialization and methods
@@ -124,10 +135,15 @@ function initDrone() {
         });
         room.on('members', members => {
             if (members.length >= 3) {
-                return alert('The room is full');
+                alert('Hey no cheating!');
                 //redirect to new room
+                window.location = '.';
             } else {
                 startListentingToSignals();
+                const isOfferer = members.length > 1;
+                console.log('trigger');
+                startWebRTC(isOfferer);
+
                 // if (signed) {
                 //     sendSignalingMessage({ 'hello': 'hello' });
                 // }
@@ -180,21 +196,75 @@ function startListentingToSignals() {
                 // sendSignalingMessage({ pk: publicKey, un: usr.displayName });
             }
         } else if (message.alive) {
+            // console.log('peer is alive');
             aliveTime = Date.now();
+            peer_flag = message.p2p;
+        } else if (message.sdp) {
+            // This is called after receiving an offer or answer from another peer
+            pc.setRemoteDescription(new RTCSessionDescription(message.sdp), () => {
+                console.log('pc.remoteDescription.type', pc.remoteDescription.type);
+                // When receiving an offer lets answer it
+                if (pc.remoteDescription.type === 'offer') {
+                    console.log('Answering offer');
+                    pc.createAnswer(localDescCreated, error => console.error(error));
+                }
+
+            }, error => console.error(error));
+        } else if (message.candidate) {
+            // Add the new ICE candidate to our connections remote description
+            console.log('candidate');
+            pc.addIceCandidate(new RTCIceCandidate(message.candidate));
         }
     });
 }
 
 setInterval(() => {
     if (ready) {
-        sendSignalingMessage({ alive: true });
+        sendSignalingMessage({ alive: true, p2p: p2p_flag });
         if (Date.now() - aliveTime > 5000) {
             isPeerOnline = false;
+            let last = convertMiliseconds(Date.now() - aliveTime, 'a');
+            if (last.d > 0 || last.h > 0) {
+                document.getElementById('peer_status').innerText = 'Last seen long ago';
+            } else if (last.m > 0) {
+                document.getElementById('peer_status').innerText = 'Last seen ' + last.m + ' mins ago';
+            } else if (last.s > 0) {
+                document.getElementById('peer_status').innerText = 'Last seen ' + last.s + ' sec ago';
+            }
         } else {
-            isPeerOnline = true;
+            if (!(isPeerOnline)) {
+                isPeerOnline = true;
+                document.getElementById('peer_status').innerText = 'Active Now';
+            }
         }
     }
-}, 3000);
+}, 1000);
+
+function convertMiliseconds(miliseconds, format) {
+    var days, hours, minutes, seconds, total_hours, total_minutes, total_seconds;
+
+    total_seconds = parseInt(Math.floor(miliseconds / 1000));
+    total_minutes = parseInt(Math.floor(total_seconds / 60));
+    total_hours = parseInt(Math.floor(total_minutes / 60));
+    days = parseInt(Math.floor(total_hours / 24));
+
+    seconds = parseInt(total_seconds % 60);
+    minutes = parseInt(total_minutes % 60);
+    hours = parseInt(total_hours % 24);
+
+    switch (format) {
+        case 's':
+            return total_seconds;
+        case 'm':
+            return total_minutes;
+        case 'h':
+            return total_hours;
+        case 'd':
+            return days;
+        default:
+            return { d: days, h: hours, m: minutes, s: seconds };
+    }
+};
 
 function checkMessages() {
     msgHash.where('to', '==', uid).where('timestamp', '<=', Date.now()).get().then((snap) => {
@@ -209,8 +279,6 @@ const util = nacl.util;
 
 let publicKey;
 let secretKey;
-
-
 
 let peerKey;
 let shared;
@@ -267,34 +335,10 @@ const decrypt = (secretOrSharedKey, messageWithNonce, key) => {
     return JSON.parse(base64DecryptedMessage);
 };
 
-
-
-async function sendTxt() {
-    let txt = document.getElementById("txt").value;
-
-    let senthash = await addTxt(JSON.stringify(data));
-    document.getElementById("sent").innerHTML = senthash;
-}
-
-async function addTxt(txt, m_id) {
-    // TODO: Message Structure
-    const obj = {
-        selfname,
-        content: txt,
-        emoji,
-        m_id: m_id
-    };
-    insertMessageToDOM(obj, true);
-    let data = encrypt(shared, obj);
-    console.log(data);
+async function addTxt(data) {
     let result = await node.add(data);
-    console.log(result);
+    // console.log(result);
     return result.path;
-}
-
-async function recTxt() {
-    let recvhash = document.getElementById("recvhash").value;
-    catMsg(recvhash);
 }
 
 async function catMsg(recvhash) {
@@ -311,13 +355,7 @@ async function catMsg(recvhash) {
     let jsonmsg = await decrypt(shared, msg);
 
     // console.log(jsonmsg);
-
-    if (document.getElementById("msg")) {
-        document.getElementById("msg").innerHTML = jsonmsg;
-    } else {
-        insertMessageToDOM(jsonmsg);
-    }
-
+    insertMessageToDOM(jsonmsg);
 }
 
 // Updating UI
@@ -329,7 +367,7 @@ function linkify(text) {
     });
 }
 
-function insertMessageToDOM(options, isFromMe = false) {
+function insertMessageToDOM_old(options, isFromMe = false) {
     const template = document.querySelector('template[data-template="message"]');
     const nameEl = template.content.querySelector('.message__name');
     if (options.emoji || options.selfname) {
@@ -355,6 +393,32 @@ function insertMessageToDOM(options, isFromMe = false) {
     messagesEl.scrollTop = messagesEl.scrollHeight - messagesEl.clientHeight;
 }
 
+function insertMessageToDOM(options, isFromMe = false) {
+    const template = document.querySelector('template[data-template="message"]');
+    // const nameEl = template.content.querySelector('.message__name');
+    // if (options.emoji || options.selfname) {
+    //     nameEl.innerText = options.selfname + ' ' + options.emoji;
+    // }
+    let msgcontent;
+    let msgcontent_sanitized;
+    msgcontent = options.content;
+    msgcontent_sanitized = linkify(msgcontent);
+    template.content.querySelector('.bubble').innerHTML = msgcontent_sanitized;
+    const clone = document.importNode(template.content, true);
+    const messageEl = clone.querySelector('.chat');
+    if (isFromMe) {
+        messageEl.classList.add('outgoing');
+    } else {
+        messageEl.classList.add('incoming');
+    }
+
+    const messagesEl = document.querySelector('.chat-box');
+    messagesEl.appendChild(clone);
+
+    // Scroll to bottom
+    messagesEl.scrollTop = messagesEl.scrollHeight - messagesEl.clientHeight;
+}
+
 const form = document.querySelector('form');
 form.addEventListener('submit', async() => {
     if (!(firebase.auth().currentUser)) {
@@ -366,24 +430,42 @@ form.addEventListener('submit', async() => {
 
         let m_id = uuidv4();
 
-        let senthash = await addTxt(value, m_id);
-
-        pinByHash(senthash);
-
-        if (!(isPeerOnline)) {
-            let mRef = msgHash.doc(m_id);
-            mRef.set({
-                id: m_id,
-                timestamp: Date.now(),
-                from: uid,
-                to: peerid,
-                hash: senthash
-            })
-        }
-
-        sendSignalingMessage({ 'newHash': senthash });
+        sendMsg(value, m_id);
     }
 });
+
+async function sendMsg(txt, m_id) {
+    const obj = {
+        selfname,
+        content: txt,
+        emoji,
+        m_id: m_id
+    };
+    insertMessageToDOM(obj, true);
+    let data = encrypt(shared, obj);
+
+    if (isPeerOnline) {
+        if (p2p_flag && peer_flag) {
+            console.log('sent through DC');
+            dataChannel.send(data);
+        } else {
+            let senthash = await addTxt(data);
+            pinByHash(senthash);
+            sendSignalingMessage({ 'newHash': senthash });
+        }
+    } else {
+        let senthash = await addTxt(data);
+        pinByHash(senthash);
+        let mRef = msgHash.doc(m_id);
+        mRef.set({
+            id: m_id,
+            timestamp: Date.now(),
+            from: uid,
+            to: peerid,
+            hash: senthash
+        })
+    }
+}
 
 
 function pinByHash(hashToPin) {
