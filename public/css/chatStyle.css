@@ -214,6 +214,13 @@ body {
   color: #f1f1f1;
   border-radius: 18px 18px 0 18px;
 }
+.outgoing .details a {
+  background: #217680;
+  color: #011323;
+  border-radius: 18px 18px 0 18px;
+  text-decoration: underline;
+  font-style: italic ;
+}
 .chat-box .incoming {
   display: flex;
   align-items: flex-end;
